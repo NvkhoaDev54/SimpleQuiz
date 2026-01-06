@@ -23,10 +23,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const userData = await login(email, password);
+      await login(email, password);
+
+      // Get user from localStorage after login
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
       // Redirect based on role
-      if (userData.role === "teacher") {
+      if (userData && userData.role === "teacher") {
         router.push("/teacher/dashboard");
       } else {
         router.push("/student/dashboard");
@@ -42,8 +45,8 @@ export default function LoginPage() {
     <div className="font-display bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px]"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[100px]"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-150 h-150 rounded-full bg-primary/10 blur-[120px]"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-125 h-125 rounded-full bg-primary/5 blur-[100px]"></div>
       </div>
 
       {/* Navigation Header */}
@@ -66,7 +69,7 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
-        <div className="w-full max-w-[440px] flex flex-col">
+        <div className="w-full max-w-110 flex flex-col">
           <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden p-8 sm:p-10">
             {/* Header Text */}
             <div className="mb-8 text-center">
@@ -180,7 +183,7 @@ export default function LoginPage() {
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-3">
               <Button variant="outline" className="h-10">
-                <Image
+                <img
                   src="https://www.google.com/favicon.ico"
                   alt="Google"
                   width={20}
@@ -190,7 +193,7 @@ export default function LoginPage() {
                 <span>Google</span>
               </Button>
               <Button variant="outline" className="h-10">
-                <Image
+                <img
                   src="https://www.microsoft.com/favicon.ico"
                   alt="Microsoft"
                   width={20}

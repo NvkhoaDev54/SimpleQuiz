@@ -70,7 +70,7 @@ export default function ProfilePage() {
       {/* Main Content */}
       <div className="layout-container flex grow flex-col">
         <div className="flex flex-1 justify-center py-5 px-4 md:px-6 lg:px-40">
-          <div className="layout-content-container flex flex-col max-w-[1024px] flex-1 w-full gap-6">
+          <div className="layout-content-container flex flex-col max-w-5xl flex-1 w-full gap-6">
             {/* Breadcrumb */}
             <div className="flex flex-wrap gap-2 items-center text-sm">
               <Link
@@ -98,7 +98,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex gap-2">
                 <Badge
-                  variant="primary"
+                  variant="success"
                   className="h-8 px-4 flex items-center gap-2"
                 >
                   <Icon name="verified" size="sm" />
@@ -113,7 +113,7 @@ export default function ProfilePage() {
               <div className="lg:col-span-4 flex flex-col gap-6">
                 {/* Profile Card */}
                 <Card className="p-6 flex flex-col items-center text-center relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-600 to-blue-400 opacity-20 dark:opacity-10" />
+                  <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-r from-blue-600 to-blue-400 opacity-20 dark:opacity-10" />
                   <div className="relative mt-4 mb-4">
                     <div
                       className="bg-cover rounded-full h-32 w-32 border-4 border-white dark:border-card-dark shadow-lg"
@@ -200,7 +200,7 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  <form className="grid grid-cols-1 md: grid-cols-2 gap-6">
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Avatar Section */}
                     <div className="col-span-1 md:col-span-2 pb-2">
                       <label className="block text-sm font-medium text-text-secondary mb-3">
@@ -250,7 +250,7 @@ export default function ProfilePage() {
                         <input
                           type="text"
                           defaultValue="Nguyễn Văn A"
-                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus: border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
+                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
                           placeholder="Nhập họ tên của bạn"
                         />
                       </div>
@@ -270,6 +270,7 @@ export default function ProfilePage() {
                           defaultValue="nguyen.vana@university.edu.vn"
                           disabled
                           className="w-full bg-gray-100 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 pl-10 pr-4 text-sm cursor-not-allowed"
+                          aria-label="Email (không thể thay đổi)"
                         />
                       </div>
                     </div>
@@ -286,7 +287,7 @@ export default function ProfilePage() {
                         <input
                           type="tel"
                           defaultValue="0901234567"
-                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus: ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
+                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
                           placeholder="Nhập số điện thoại"
                         />
                       </div>
@@ -299,7 +300,7 @@ export default function ProfilePage() {
                       </label>
                       <textarea
                         rows={3}
-                        className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-3 px-4 text-sm focus: ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus: bg-[#202630] transition-all outline-none resize-none"
+                        className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-3 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none resize-none"
                         placeholder="Viết một vài dòng về bản thân bạn..."
                       />
                     </div>
@@ -335,7 +336,7 @@ export default function ProfilePage() {
                       <input
                         type="password"
                         placeholder="••••••••"
-                        className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus: ring-2 focus:ring-primary focus:border-primary focus: bg-white dark:focus:bg-[#202630] transition-all outline-none"
+                        className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -346,7 +347,7 @@ export default function ProfilePage() {
                         <input
                           type="password"
                           placeholder="••••••••"
-                          className="w-full bg-gray-50 dark: bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark: focus:bg-[#202630] transition-all outline-none"
+                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
                         />
                       </div>
                       <div>
@@ -356,7 +357,7 @@ export default function ProfilePage() {
                         <input
                           type="password"
                           placeholder="••••••••"
-                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus: ring-2 focus:ring-primary focus:border-primary focus: bg-white dark:focus:bg-[#202630] transition-all outline-none"
+                          className="w-full bg-gray-50 dark:bg-input-dark border border-gray-200 dark:border-transparent rounded-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white dark:focus:bg-[#202630] transition-all outline-none"
                         />
                       </div>
                     </div>
