@@ -1,15 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useRef, KeyboardEvent, ClipboardEvent } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Button from "@/components/ui/Button";
-import Icon from "@/components/ui/Icon";
+import { useState, useRef, KeyboardEvent, ClipboardEvent } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/ui/Icon';
+import { useSocket } from '@/lib/hooks/useSocket';
 
 export default function QuizJoinPage() {
   const router = useRouter();
-  const [pin, setPin] = useState<string[]>(["", "", "", "", "", ""]);
+  const [pin, setPin] = useState<string[]>(['', '', '', '', '', '']);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const { socket } = useSocket();
 
   const handleInput = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -24,17 +28,17 @@ export default function QuizJoinPage() {
   };
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !pin[index] && index > 0) {
+    if (e.key === 'Backspace' && !pin[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const text = e.clipboardData.getData("text");
+    const text = e.clipboardData.getData('text');
     if (!/^\d+$/.test(text)) return;
 
-    const digits = text.split("").slice(0, 6);
+    const digits = text.split('').slice(0, 6);
     const newPin = [...pin];
     digits.forEach((digit, i) => {
       newPin[i] = digit;
@@ -45,10 +49,37 @@ export default function QuizJoinPage() {
     inputRefs.current[lastIndex]?.focus();
   };
 
-  const handleSubmit = () => {
-    const code = pin.join("");
-    if (code.length === 6) {
-      router.push(`/student/quiz/take/${code}`);
+  const handleSubmit = async () => {
+    const code = pin.join('');
+    
+    if (code.length !== 6) {
+      setError('Vui lòng nhập đủ 6 số');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    try {
+      // Connect to socket if not connected
+      if (!socket?.connected) {
+        socket?.connect();
+      }
+
+      // Join quiz room
+      socket?.emit('join-quiz', { pin: code }, (response: any) => {
+        setLoading(false);
+        
+        if (response.success) {
+          // Redirect to quiz taking page
+          router.push(`/student/quiz/take/${code}`);
+        } else {
+          setError(response.error || 'Mã PIN không hợp lệ');
+        }
+      });
+    } catch (err) {
+      setLoading(false);
+      setError('Có lỗi xảy ra. Vui lòng thử lại');
     }
   };
 
@@ -67,90 +98,93 @@ export default function QuizJoinPage() {
             <Icon name="school" />
           </div>
           <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            QuizApp
+            QuizMaster
           </h2>
         </div>
         <Link href="/login">
           <Button variant="secondary" size="sm">
             <Icon name="person" size="sm" className="mr-2" />
-            <span className="hidden sm:inline">Giảng viên đăng nhập</span>
+            <span className="hidden sm:inline">Đăng nhập</span>
           </Button>
         </Link>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
-        <div className="w-full max-w-md animate-fade-in">
-          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl dark:shadow-none border border-gray-100 dark:border-[#282e39] overflow-hidden p-8 sm:p-10">
-            {/* Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Icon name="pin" className="text-4xl" />
+      <main className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-4">
+              <Icon name="quiz" size="xl" className="text-primary" />
+            </div>
+            <h1 className="text-4xl font-bold mb-2">Tham gia Quiz</h1>
+            <p className="text-text-secondary text-lg">
+              Nhập mã PIN 6 số để bắt đầu
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-8">
+            {/* PIN Input */}
+            <div className="flex gap-2 justify-center mb-6">
+              {pin.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleInput(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={index === 0 ? handlePaste : undefined}
+                  className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 dark:bg-gray-800 transition-all"
+                  aria-label={`Chữ số thứ ${index + 1} của mã PIN`}
+                />
+              ))}
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-center mb-6">
+                {error}
               </div>
-            </div>
+            )}
 
-            {/* Text Content */}
-            <div className="text-center mb-8">
-              <h1 className="text-gray-900 dark:text-white text-3xl font-bold mb-3 tracking-tight">
-                Nhập mã tham gia
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-base leading-relaxed">
-                Vui lòng nhập mã PIN 6 số do giảng viên cung cấp để bắt đầu bài
-                kiểm tra.
-              </p>
-            </div>
-
-            {/* PIN Inputs */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
+            {/* Submit Button */}
+            <Button
+              onClick={handleSubmit}
+              disabled={loading || pin.join('').length !== 6}
+              className="w-full"
+              size="lg"
             >
-              <div className="flex justify-center gap-2 sm:gap-3 mb-8">
-                {pin.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => {
-                      inputRefs.current[index] = el;
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleInput(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={index === 0 ? handlePaste : undefined}
-                    autoFocus={index === 0}
-                    className="w-10 h-14 sm:w-12 sm:h-16 text-center text-2xl font-bold bg-gray-50 dark:bg-[#111318] border-b-2 border-gray-300 dark:border-[#3b4354] rounded-t-lg focus:outline-none focus:border-primary focus:ring-0 text-gray-900 dark:text-white transition-all caret-primary"
-                  />
-                ))}
-              </div>
+              {loading ? (
+                <>
+                  <Icon name="hourglass_empty" size="sm" className="mr-2 animate-spin" />
+                  Đang kết nối...
+                </>
+              ) : (
+                <>
+                  <Icon name="login" size="sm" className="mr-2" />
+                  Tham gia
+                </>
+              )}
+            </Button>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-                disabled={pin.join("").length !== 6}
-              >
-                Tham gia ngay
-                <Icon name="arrow_forward" size="sm" className="ml-2" />
-              </Button>
-            </form>
-
-            {/* Footer Note */}
-            <div className="mt-6 pt-6 border-t border-gray-100 dark:border-[#282e39] text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Gặp sự cố?{" "}
-                <Link
-                  href="#"
-                  className="text-primary hover:text-primary-hover font-medium underline decoration-primary/30 underline-offset-2"
-                >
-                  Liên hệ hỗ trợ
-                </Link>
+            {/* Info */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-text-secondary text-center">
+                💡 Mã PIN được cung cấp bởi giáo viên của bạn
               </p>
             </div>
+          </div>
+
+          {/* Alternative Action */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-text-secondary">
+              Bạn là giáo viên?{' '}
+              <Link href="/login" className="text-primary hover:underline font-medium">
+                Đăng nhập tại đây
+              </Link>
+            </p>
           </div>
         </div>
       </main>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lexend, Noto_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/context/AuthContext";
 
 const lexend = Lexend({
   subsets: ["latin"],
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${lexend.variable} ${notoSans.variable} font-display antialiased bg-background-light dark:bg-background-dark text-slate-900 dark:text-white`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

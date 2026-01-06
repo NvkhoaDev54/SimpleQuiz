@@ -14,11 +14,11 @@ import QuizNavigator from "@/components/quiz/QuizNavigator";
 export default function TakeQuizPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([
-    1, 2, 3, 4,
-  ]);
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([6]);
   const [selectedAnswer, setSelectedAnswer] = useState("c");
+
+  // Mock answered questions for demo
+  const answeredQuestions = [1, 2, 3, 4];
 
   const totalQuestions = 50;
   const quizTitle = "Kiểm tra giữa kỳ - Học kỳ I 2024";

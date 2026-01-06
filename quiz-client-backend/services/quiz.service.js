@@ -1,4 +1,4 @@
-const { generateQuiz } = require("./gemini. service");
+const { generateQuiz } = require("./gemini.service");
 const { activeQuizzes } = require("../storage/quiz.storage");
 
 // ✅ Hàm tạo mã 6 số

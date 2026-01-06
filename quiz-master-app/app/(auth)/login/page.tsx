@@ -2,13 +2,41 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Icon from "@/components/ui/Icon";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const userData = await login(email, password);
+
+      // Redirect based on role
+      if (userData.role === "teacher") {
+        router.push("/teacher/dashboard");
+      } else {
+        router.push("/student/dashboard");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Đăng nhập thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="font-display bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300">
@@ -51,26 +79,40 @@ export default function LoginPage() {
             </div>
 
             {/* Form */}
-            <form
-              className="flex flex-col gap-5"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
               {/* Email Field */}
               <div className="flex flex-col gap-2">
-                <label className="text-slate-900 dark:text-white text-sm font-medium">
+                <label
+                  htmlFor="email"
+                  className="text-slate-900 dark:text-white text-sm font-medium"
+                >
                   Email hoặc Tên đăng nhập
                 </label>
                 <Input
-                  type="text"
+                  id="email"
+                  type="email"
                   placeholder="user@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   icon={<Icon name="person" size="sm" />}
+                  required
                 />
               </div>
 
               {/* Password Field */}
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-slate-900 dark:text-white text-sm font-medium">
+                  <label
+                    htmlFor="password"
+                    className="text-slate-900 dark:text-white text-sm font-medium"
+                  >
                     Mật khẩu
                   </label>
                   <Link
@@ -85,9 +127,13 @@ export default function LoginPage() {
                     <Icon name="lock" size="sm" />
                   </div>
                   <input
+                    id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="form-input block w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#11161f] text-slate-900 dark:text-white h-12 pl-10 pr-12 placeholder:text-slate-400 focus:border-primary focus: ring-1 focus:ring-primary transition-all text-base"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-input block w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#11161f] text-slate-900 dark:text-white h-12 pl-10 pr-12 placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base"
+                    required
                   />
                   <button
                     type="button"
@@ -107,15 +153,15 @@ export default function LoginPage() {
 
               {/* Submit Button */}
               <div className="pt-2">
-                <Link href="/student/dashboard">
-                  <Button
-                    size="lg"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-                  >
-                    <span>Đăng nhập</span>
-                    <Icon name="arrow_forward" className="ml-2" size="sm" />
-                  </Button>
-                </Link>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={loading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:bg-blue-400"
+                >
+                  <span>{loading ? "Đang đăng nhập..." : "Đăng nhập"}</span>
+                  <Icon name="arrow_forward" className="ml-2" size="sm" />
+                </Button>
               </div>
             </form>
 
